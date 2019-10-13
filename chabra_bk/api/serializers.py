@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+from .models import Product
+
 
 
 #Used for Register
@@ -19,8 +21,17 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return validated_data
 
 
+class ProductDetailsSerializer(serializers.ModelSerializer):
+	#total = serializers.SerializerMethodField()
+	class Meta:
+		model = Product
+		fields = ['name', 'product_type', 'price', 'img', 'origin',
+					'quantity', 'description', 'availibility', 'quantity_per_order', 'date_added']
+
+
 #Used for Login
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['first_name', 'last_name']
+
