@@ -120,7 +120,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=12),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=30),
  }
 
 # Internationalization
