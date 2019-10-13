@@ -1,69 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 
 
-
-# class Category(models.Model):
-# 	name=models.CharField(max_length=120)
-# 	subcategories= models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='subcategory')
-
-class Subcategory(models.Model):
-	name=models.CharField(max_length=120)
-	# Category= models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category')
+TYPE = (
+	('F', 'Fruit'),
+	('V', 'Vegetable')
+)
 
 class Product(models.Model):
 	name=models.CharField(max_length=120)
-	subcategory=models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='related')
-	price=models.PositiveIntegerField()
+	product_type=models.CharField(choices=TYPE, max_length=25)
+	price=models.DecimalField(max_digits=6, decimal_places=3, validators=[MinValueValidator(0.0)])
 	img=models.ImageField()
-	brand_name= models.CharField(max_length=120)
+	origin= models.CharField(max_length=120)
 	quantity=models.PositiveIntegerField()
 	description=models.TextField()
 	availibility=models.BooleanField(default=True)
 	quantity_per_order=models.PositiveIntegerField()
 	date_added=models.DateField()
 
-
-
-
-
-GENDER = (
-    ('M', 'Male'),
-    ('F', 'Female')
-)
-
-class Profile(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-	phone=models.PositiveIntegerField()
-	gender=models.CharField(choices=GENDER, max_length=25)
-	age=models.PositiveIntegerField()
-	img=models.ImageField()
-
-
-
-PAYMENT_METHOD = (
-    ('CASH', 'Cash on delivery'),
-    ('KNET', 'K-Net')
-)
-
-STATUS = (
-	('PENDING', 'Order is Pending'),
-    ('CONIFORM', 'Order is Confirmed')
-)
-
-class Order(models.Model):
-	number=models.PositiveIntegerField()
-	products= models.ForeignKey(Product, on_delete=models.CASCADE, related_name='ordereditems')
-	total_price=models.PositiveIntegerField()
-	user= models.ForeignKey(User, on_delete=models.CASCADE, related_name='ordering')
-	date=models.DateField()
-	payment_method=models.CharField(choices=PAYMENT_METHOD, max_length=25)
-	shipping_address=models.TextField()
-	status=models.CharField(choices=STATUS, max_length=25)
-
-
-
-class Cart(models.Model):
-	user= models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
-	products= models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cartitems')
-	date=models.DateField()
+	def __str__(self):
+		return (self.name)
