@@ -1,12 +1,16 @@
+from rest_framework.generics import (CreateAPIView, RetrieveAPIView, ListAPIView)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST)
+from rest_framework.response import Response
 
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView
-from .serializers import UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer
-from .models import Product
+from .serializers import (UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer, 
+	ProfileSerializer)
+
+from .models import (Product, Profile)
 
 
 class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
-
 
 class ProductListView(ListAPIView):
     queryset = Product.objects.all()
@@ -18,3 +22,14 @@ class ProductDetails(RetrieveAPIView):
 	lookup_field = 'id'
 	lookup_url_kwarg = 'product_id'
 
+class ProfileView(RetrieveAPIView):
+	serializer_class = ProfileSerializer
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request, format=None):
+		if request.user.is_anonymous:
+			return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+		profile = ProfileSerializer(Profile.objects.get(user=request.user))
+		return Response(profile.data, status=HTTP_200_OK)
+
+	
