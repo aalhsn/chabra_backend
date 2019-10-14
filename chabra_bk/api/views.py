@@ -17,5 +17,4 @@ class ProductDetails(RetrieveAPIView):
 	serializer_class = ProductDetailsSerializer
 	lookup_field = 'id'
 	lookup_url_kwarg = 'product_id'
-	#permission_classes = [IsAuthenticated, IsBookingOwner]
 
