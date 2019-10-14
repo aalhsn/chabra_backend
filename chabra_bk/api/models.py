@@ -18,3 +18,16 @@ class Product(models.Model):
 	def __str__ (self):
 		return "[ %s ] %s" %(self.id,self.name)
 
+
+
+GENDER = (("F", "Female"), ("M", "Male"))
+
+class Profile(models.Model):
+	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+	phone = models.PositiveIntegerField(null=True, max_length=15)
+	gender = models.CharField(choices=GENDER, max_length=25, null=True)
+	age = models.PositiveIntegerField(null=True)
+	image = models.ImageField(null=True)
+
+	def __str__(self):
+		return self.user.username
