@@ -1,0 +1,1 @@
+web: gunicorn wtshop.wsgi
