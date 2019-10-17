@@ -1,19 +1,20 @@
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView, ListAPIView)
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST)
 from rest_framework.response import Response
 
 from .serializers import (UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer, 
-	ProfileSerializer)
+	ProfileSerializer, OrderSerializer)
 
-from .models import (Product, Profile)
+from .models import (Product, Profile, Order)
 
 
 class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
 
 class ProductListView(ListAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(active=True)
     serializer_class = ProductsListSerializer
 
 class ProductDetails(RetrieveAPIView):
@@ -33,3 +34,6 @@ class ProfileView(RetrieveAPIView):
 		return Response(profile.data, status=HTTP_200_OK)
 
 	
+class OrderList(ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer

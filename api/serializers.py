@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Product, Profile
+from .models import Product, Profile, Basket, Order
 
 class UserCreateSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True)
@@ -31,9 +31,9 @@ class ProductDetailsSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["username", "first_name", "last_name", "email"]
+	class Meta:
+		model = User
+		fields = ["username", "first_name", "last_name", "email"]
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -42,3 +42,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 		model = Profile
 		fields = '__all__'
 
+class BasketSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Basket
+		fields = '__all__'
+
+class OrderSerializer(serializers.ModelSerializer):
+	ordered_items= BasketSerializer(many=True)
+
+	class Meta:
+		model = Order
+		fields = ["order_ref", "customer", "address", "ordered_items"]

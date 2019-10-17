@@ -26,7 +26,7 @@ GENDER = (("F", "Female"), ("M", "Male"))
 
 class Profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-	phone = models.PositiveIntegerField(null=True, max_length=15)
+	phone = models.PositiveIntegerField(null=True)
 	gender = models.CharField(choices=GENDER, max_length=25, null=True)
 	age = models.PositiveIntegerField(null=True)
 	image = models.ImageField(null=True)
@@ -42,3 +42,16 @@ def create_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
     instance.profile.save()  
+
+class Order(models.Model):
+	order_ref = models.CharField(max_length=7)
+	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
+	address = models.CharField(max_length=100)
+
+
+class Basket(models.Model):
+	item = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
+	quantity = models.PositiveIntegerField()
+	order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='ordered_items')
+
+
