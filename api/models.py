@@ -44,9 +44,9 @@ def save_profile(sender, instance, **kwargs):
     instance.profile.save()  
 
 class Order(models.Model):
-	order_ref = models.CharField(max_length=7)
+	# order_ref = models.CharField(max_length=7)
 	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
-	address = models.CharField(max_length=100)
+	# address = models.CharField(max_length=100)
 
 
 class Basket(models.Model):

@@ -4,10 +4,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST)
 from rest_framework.response import Response
 
-from .serializers import (UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer, 
+from .serializers import (UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer,
 	ProfileSerializer, OrderSerializer)
 
-from .models import (Product, Profile, Order)
+from .models import (Product, Profile, Order, Basket)
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -37,3 +37,12 @@ class ProfileView(RetrieveAPIView):
 class OrderList(ListAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+class OrderItems(APIView):
+     def post(self, request):
+     	print("Our Post Request:\n",request.data)
+     	# serializer = OrderSerializer(request.data)
+     	# create order
+     	order  = Order.objects.create(customer = request.user)
+     	items = request.data
+     	basket = Basket.objects.create(item = Product.objects.get(id=items[0]['id']), quantity= items[0]['quantity'] , order= order)

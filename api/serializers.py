@@ -23,6 +23,7 @@ class ProductsListSerializer(serializers.ModelSerializer):
 		fields = ['id', 'name', 'price', 'img', 'date_added']
 
 
+
 class ProductDetailsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Product
@@ -53,3 +54,7 @@ class OrderSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Order
 		fields = ["order_ref", "customer", "address", "ordered_items"]
+
+	def create(self, validated_data):
+		return Basket.objects.create(validated_data)
+		
