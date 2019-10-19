@@ -40,9 +40,10 @@ class OrderList(ListAPIView):
 
 class OrderItems(APIView):
      def post(self, request):
-     	print("Our Post Request:\n",request.data)
      	# serializer = OrderSerializer(request.data)
      	# create order
      	order  = Order.objects.create(customer = request.user)
      	items = request.data
-     	basket = Basket.objects.create(item = Product.objects.get(id=items[0]['id']), quantity= items[0]['quantity'] , order= order)
+     	for item in items:
+     		basket = Basket.objects.create(item = Product.objects.get(id=item['id']), quantity= item['quantity'] , order= order)
+     	return Response(order.id, status=HTTP_200_OK)
