@@ -44,8 +44,9 @@ def save_profile(sender, instance, **kwargs):
     instance.profile.save()  
 
 class Order(models.Model):
-	# order_ref = models.CharField(max_length=7)
+	order_ref = models.CharField(max_length=10)
 	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
+	date_time = models.DateTimeField(auto_now_add=True)
 	# address = models.CharField(max_length=100)
 
 

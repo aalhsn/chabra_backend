@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST)
 from rest_framework.response import Response
+import uuid
 
 from .serializers import (UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer,
 	ProfileSerializer, OrderSerializer)
@@ -11,11 +12,11 @@ from .models import (Product, Profile, Order, Basket)
 
 
 class UserCreateAPIView(CreateAPIView):
-    serializer_class = UserCreateSerializer
+	serializer_class = UserCreateSerializer
 
 class ProductListView(ListAPIView):
-    queryset = Product.objects.filter(active=True)
-    serializer_class = ProductsListSerializer
+	queryset = Product.objects.filter(active=True)
+	serializer_class = ProductsListSerializer
 
 class ProductDetails(RetrieveAPIView):
 	queryset = Product.objects.all()
@@ -35,15 +36,24 @@ class ProfileView(RetrieveAPIView):
 
 	
 class OrderList(ListAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
+	serializer_class = OrderSerializer
+
+	def get_queryset(self):
+		query = Order.objects.filter(customer=self.request.user)
+		return query
 
 class OrderItems(APIView):
-     def post(self, request):
-     	# serializer = OrderSerializer(request.data)
-     	# create order
-     	order  = Order.objects.create(customer = request.user)
-     	items = request.data
-     	for item in items:
-     		basket = Basket.objects.create(item = Product.objects.get(id=item['id']), quantity= item['quantity'] , order= order)
-     	return Response(order.id, status=HTTP_200_OK)
+
+	def post(self, request):
+		rand_order_ref = str(uuid.uuid4())[0:8]
+		order  = Order.objects.create(order_ref= rand_order_ref, customer = request.user)
+		items = request.data
+		for item in items:
+			basket = Basket.objects.create(item = Product.objects.get(id=item['id']), quantity= item['quantity'] , order= order)
+		return Response(order.id, status=HTTP_200_OK)
+
+	def get(self, request):
+		orders = OrderSerializer(Order.objects.filter(customer=self.request.user), many=True)
+		return Response(orders.data,status=HTTP_200_OK)
+
+
