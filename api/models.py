@@ -6,25 +6,22 @@ from django.dispatch import receiver
 
 class Product(models.Model):
 	name=models.CharField(max_length=120)
-	# product_type=models.CharField(choices=TYPE, max_length=25) add later in category model
 	price=models.DecimalField(max_digits=6, decimal_places=3, validators=[MinValueValidator(0.0)])
 	img=models.ImageField()
-	# origin= models.CharField(max_length=120) Add later in own model
 	quantity=models.PositiveIntegerField()
 	description=models.TextField()
-	active=models.BooleanField(default=True) # changed from availability to active
-	quantity_per_order=models.PositiveIntegerField()
+	active=models.BooleanField(default=True)
 	date_added=models.DateField(auto_now=True)
 
-
 	def __str__ (self):
-		return "[ %s ] %s" %(self.id,self.name)
+		return self.name
 
-
-
-GENDER = (("F", "Female"), ("M", "Male"))
 
 class Profile(models.Model):
+	GENDER = (
+		("F", "Female"),
+		("M", "Male")
+	)
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
 	phone = models.PositiveIntegerField(null=True)
 	gender = models.CharField(choices=GENDER, max_length=25, null=True)
@@ -39,20 +36,19 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user= instance)
 
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    instance.profile.save()  
 
 class Order(models.Model):
 	order_ref = models.CharField(max_length=10)
-	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
+	address = models.CharField(max_length=200)
+	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
 	date_time = models.DateTimeField(auto_now_add=True)
-	# address = models.CharField(max_length=100)
+	total = models.DecimalField(max_digits=8, decimal_places=3, validators=[MinValueValidator(0.0)])
 
 
 class Basket(models.Model):
-	item = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
+	# Change field name to product
+	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='products')
 	quantity = models.PositiveIntegerField()
-	order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='ordered_items')
+	order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='baskets')
 
 
