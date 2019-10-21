@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST)
 from rest_framework.response import Response
 import uuid
+from rest_framework.filters import OrderingFilter
+
 
 from .serializers import (UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer,
 	ProfileSerializer, OrderSerializer)
@@ -46,6 +48,7 @@ class OrderList(ListAPIView):
 
 class OrderItems(APIView):
 	serializer_class = OrderSerializer
+	
 
 	def post(self, request):
 		rand_order_ref = str(uuid.uuid4())[0:8]
@@ -63,7 +66,8 @@ class OrderItems(APIView):
 		return Response(self.serializer_class(order).data, status=HTTP_200_OK)
 
 	def get(self, request):
-		orders = self.serializer_class(request.user.orders.all(), many=True)
+		orders = self.serializer_class(request.user.orders.all().order_by('-date_time'), many=True)
+		
 		return Response(orders.data,status=HTTP_200_OK)
 
 
