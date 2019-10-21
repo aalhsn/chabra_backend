@@ -33,16 +33,35 @@ class ProductDetailsSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+
 	class Meta:
 		model = User
 		fields = ["username", "first_name", "last_name", "email"]
+		read_only_fields = ['username']
+
 
 
 class ProfileSerializer(serializers.ModelSerializer):
 	user = UserSerializer()
 	class Meta:
 		model = Profile
-		fields = '__all__'
+		exclude = ["id"]
+
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+	user = UserSerializer()
+	class Meta:
+		model = Profile
+		exclude = ["id"]
+
+	def update(self, instance, validated_data):
+		# removing (user) key from validated_data dictionary to use update method of
+		# base serializer class to update model fields
+		user_field = validated_data.pop('user', None)
+		temp_user_serializer = UserSerializer()
+		super().update(instance, validated_data)
+		return super(UserSerializer, temp_user_serializer).update(instance, user_field)
+
 
 
 class BasketSerializer(serializers.ModelSerializer):
