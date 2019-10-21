@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import (UserCreateAPIView, ProductDetails, ProductListView, ProfileView, OrderList, OrderItems)
+from .views import (UserCreateAPIView, ProductDetails, ProductListView, ProfileView, ProfileUpdateView, OrderList, OrderItems)
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [
@@ -18,10 +18,15 @@ urlpatterns = [
     # User Profile
     path("profile/", ProfileView.as_view(), name="profile"),
 
+    #Update Profile
+    path("profile/edit/", ProfileUpdateView.as_view(), name="profile-edit"),
+
     #Order
     path("order/", OrderList.as_view(), name="order"),
 
     #Order Items
     path("items/", OrderItems.as_view(), name="order-items"),
+
+
 
 ]

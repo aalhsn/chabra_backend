@@ -1,4 +1,4 @@
-from rest_framework.generics import (CreateAPIView, RetrieveAPIView, ListAPIView)
+from rest_framework.generics import (CreateAPIView, RetrieveAPIView, ListAPIView, RetrieveUpdateAPIView)
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST)
@@ -6,10 +6,10 @@ from rest_framework.response import Response
 import uuid
 
 from .serializers import (UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer,
-	ProfileSerializer, OrderSerializer)
+	ProfileSerializer, UpdateProfileSerializer, OrderSerializer)
 
 from .models import (Product, Profile, Order, Basket)
-
+from .permissions import IsOwner
 
 class UserCreateAPIView(CreateAPIView):
 	serializer_class = UserCreateSerializer
@@ -34,6 +34,14 @@ class ProfileView(RetrieveAPIView):
 	def get(self, request):
 		profile = ProfileSerializer(request.user.profile)
 		return Response(profile.data, status=HTTP_200_OK)
+
+
+class ProfileUpdateView(RetrieveUpdateAPIView):
+	serializer_class = UpdateProfileSerializer
+	permission_classes = [IsAuthenticated, IsOwner]
+
+	def get_object(self):
+		return Profile.objects.get(user=self.request.user)
 
 	
 class OrderList(ListAPIView):
@@ -65,5 +73,10 @@ class OrderItems(APIView):
 	def get(self, request):
 		orders = self.serializer_class(request.user.orders.all(), many=True)
 		return Response(orders.data,status=HTTP_200_OK)
+
+
+
+
+
 
 
