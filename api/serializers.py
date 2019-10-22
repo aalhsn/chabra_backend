@@ -55,12 +55,13 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 		exclude = ["id"]
 
 	def update(self, instance, validated_data):
-		# removing (user) key from validated_data dictionary to use update method of
-		# base serializer class to update model fields
+		# removing (user) key from validated_data dictionary to use update the user which
+		# has read only username field 
 		user_field = validated_data.pop('user', None)
 		temp_user_serializer = UserSerializer()
 		super().update(instance, validated_data)
-		return super(UserSerializer, temp_user_serializer).update(instance, user_field)
+		super(UserSerializer, temp_user_serializer).update(instance.user, user_field)
+		return instance
 
 
 
