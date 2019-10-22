@@ -65,7 +65,7 @@ def create_profile(sender, instance, created, **kwargs):
 def reduce_inventory(instance, created, **kwargs):
 	if created:
 		product = Product.objects.get(id=instance.product.id)
-		product.quantity -= instance.quantity
+		product.stock -= instance.quantity
 		product.save()
 
 
