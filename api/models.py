@@ -8,7 +8,7 @@ class Product(models.Model):
 	name=models.CharField(max_length=120)
 	price=models.DecimalField(max_digits=6, decimal_places=3, validators=[MinValueValidator(0.0)])
 	img=models.ImageField()
-	quantity=models.PositiveIntegerField()
+	stock=models.PositiveIntegerField()
 	description=models.TextField()
 	active=models.BooleanField(default=True)
 	date_added=models.DateField(auto_now=True)
@@ -24,20 +24,20 @@ class Profile(models.Model):
 	)
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
 	phone = models.PositiveIntegerField(null=True)
-	gender = models.CharField(choices=GENDER, max_length=25, null=True)
+	gender = models.CharField(choices=GENDER, max_length=2, null=True)
 	age = models.PositiveIntegerField(null=True)
 	image = models.ImageField(null=True)
 
 	def __str__(self):
 		return self.user.username
 
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user= instance)
 
 
 class Order(models.Model):
+	STATUS = (
+		("C", "Cart"),
+		("O", "Ordered")
+	)
 	order_ref = models.CharField(max_length=10)
 	address = models.CharField(max_length=200)
 	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
@@ -45,10 +45,27 @@ class Order(models.Model):
 	total = models.DecimalField(max_digits=8, decimal_places=3, validators=[MinValueValidator(0.0)])
 
 
+
 class Basket(models.Model):
 	# Change field name to product
 	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='products')
 	quantity = models.PositiveIntegerField()
 	order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='baskets')
+
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user= instance)
+
+
+
+@receiver(post_save, sender=Basket)
+def reduce_inventory(instance, created, **kwargs):
+	if created:
+		product = Product.objects.get(id=instance.product.id)
+		product.quantity -= instance.quantity
+		product.save()
 
 
