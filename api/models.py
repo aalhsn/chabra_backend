@@ -29,6 +29,7 @@ class Profile(models.Model):
 	age = models.PositiveIntegerField(null=True)
 	image = models.ImageField(null=True)
 
+
 	def __str__(self):
 		return self.user.username
 
@@ -37,6 +38,12 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user= instance)
 
+class Address(models.Model):
+	area = models.CharField(max_length=150)
+	street = models.CharField(max_length=200)
+	block = models.CharField(max_length=50)
+	optional = models.CharField(max_length=200)
+	profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='addresses')
 
 class Order(models.Model):
 	order_ref = models.CharField(max_length=10)
@@ -44,6 +51,22 @@ class Order(models.Model):
 	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
 	date_time = models.DateTimeField(auto_now_add=True)
 	total = models.DecimalField(max_digits=8, decimal_places=3, validators=[MinValueValidator(0.0)])
+
+@receiver(post_save, sender=Order)
+def save_new_address(instance, created, **kwargs):
+	if created:
+		profile = Profile.objects.get(user=instance.customer)
+		print(">>>>>HERHE   ",profile.addresses)
+		if profile.addresses == True:
+			for address in profile.addresses:
+				if instance.address.area != address.area and instance.address.street != address.street and instance.address.block != address.block:
+					profile.addresses.append(instance.address)
+					profile.save()
+		else :
+
+			profile.addresses.append(instance.address)
+			profile.save()
+
 
 
 class Basket(models.Model):

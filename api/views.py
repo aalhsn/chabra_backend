@@ -11,9 +11,9 @@ import uuid
 
 from .serializers import (
 	UserCreateSerializer, ProductDetailsSerializer, ProductsListSerializer,
-	UpdateProfileSerializer, OrderSerializer
+	UpdateProfileSerializer, OrderSerializer, AddressSerializer
 )
-from .models import (Product, Profile, Order, Basket)
+from .models import (Product, Profile, Order, Basket, Address)
 
 
 class UserCreateAPIView(CreateAPIView):
