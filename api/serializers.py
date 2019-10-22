@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Product, Profile, Basket, Order
 
+
 class UserCreateSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True)
 	class Meta:
@@ -18,7 +19,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class ProductsListSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Product
-		fields = ['id', 'name', 'price', 'img', 'date_added']
+		fields = ['id', 'name', 'price', 'img', 'date_added', 'stock',]
 
 class ProductHistorySerializer(serializers.ModelSerializer):
 	class Meta:
@@ -28,40 +29,37 @@ class ProductHistorySerializer(serializers.ModelSerializer):
 class ProductDetailsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Product
-		fields = ['id', 'name', 'price', 'img','stock', 'description',
-				 'active', 'date_added']
+		fields = ['id', 'name', 'price', 'img','stock', 'description', 'date_added']
 
 
 class UserSerializer(serializers.ModelSerializer):
-
 	class Meta:
 		model = User
 		fields = ["username", "first_name", "last_name", "email"]
 		read_only_fields = ['username']
 
 
-
-class ProfileSerializer(serializers.ModelSerializer):
-	user = UserSerializer()
-	class Meta:
-		model = Profile
-		exclude = ["id"]
-
-
 class UpdateProfileSerializer(serializers.ModelSerializer):
 	user = UserSerializer()
+	order_history = serializers.SerializerMethodField()
 	class Meta:
 		model = Profile
 		exclude = ["id"]
 
 	def update(self, instance, validated_data):
-		# removing (user) key from validated_data dictionary to use update the user which
-		# has read only username field 
+		"""
+		removing (user) key from validated_data dictionary to use update the
+		user which has read only username field
+		"""
 		user_field = validated_data.pop('user', None)
 		temp_user_serializer = UserSerializer()
 		super().update(instance, validated_data)
 		super(UserSerializer, temp_user_serializer).update(instance.user, user_field)
 		return instance
+
+	def get_order_history(self, obj):
+		orders = OrderSerializer(obj.user.orders.all().order_by('-date_time'), many=True)
+		return orders.data
 
 
 
