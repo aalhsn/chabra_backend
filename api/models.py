@@ -12,6 +12,9 @@ class Product(models.Model):
 	description=models.TextField()
 	active=models.BooleanField(default=True)
 	date_added=models.DateField(auto_now=True)
+	origin = models.CharField(max_length=50)
+	
+
 
 	def __str__ (self):
 		return self.name
