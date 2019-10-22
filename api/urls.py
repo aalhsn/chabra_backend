@@ -25,7 +25,7 @@ urlpatterns = [
     path("order/", OrderList.as_view(), name="order"),
 
     #Order Items
-    path("items/", OrderItems.as_view(), name="order-items"),
+    path("orders/", OrderItems.as_view(), name="order-items"),
 
 
 
