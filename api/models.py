@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver 
 
+
 class Product(models.Model):
 	name=models.CharField(max_length=120)
 	price=models.DecimalField(max_digits=6, decimal_places=3, validators=[MinValueValidator(0.0)])
@@ -31,13 +32,13 @@ class Profile(models.Model):
 	def __str__(self):
 		return self.user.username
 
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user= instance)
 
 
 class Order(models.Model):
-	STATUS = (
-		("C", "Cart"),
-		("O", "Ordered")
-	)
 	order_ref = models.CharField(max_length=10)
 	address = models.CharField(max_length=200)
 	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
@@ -45,21 +46,10 @@ class Order(models.Model):
 	total = models.DecimalField(max_digits=8, decimal_places=3, validators=[MinValueValidator(0.0)])
 
 
-
 class Basket(models.Model):
-	# Change field name to product
 	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='products')
 	quantity = models.PositiveIntegerField()
 	order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='baskets')
-
-
-
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user= instance)
-
-
 
 @receiver(post_save, sender=Basket)
 def reduce_inventory(instance, created, **kwargs):
@@ -67,5 +57,3 @@ def reduce_inventory(instance, created, **kwargs):
 		product = Product.objects.get(id=instance.product.id)
 		product.stock -= instance.quantity
 		product.save()
-
-
