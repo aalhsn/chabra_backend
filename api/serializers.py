@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Product, Profile, Basket, Order
+from .models import Product, Profile, Basket, Order, Address
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -30,9 +30,14 @@ class ProductDetailsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Product
 		fields = ['id', 'name', 'price', 'img','stock', 'description', 'date_added']
-
+		
+class AddressSerializer(serializers.ModelSerializer):
+	class Meta:
+		model= Address
+		fields = "__all__"
 
 class UserSerializer(serializers.ModelSerializer):
+
 	class Meta:
 		model = User
 		fields = ["username", "first_name", "last_name", "email"]
@@ -41,10 +46,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
 	user = UserSerializer()
+	addresses = AddressSerializer(many=True)
 	order_history = serializers.SerializerMethodField()
+
 	class Meta:
 		model = Profile
-		exclude = ["id"]
+		fields = ["user","phone","gender","age","image","addresses", "order_history"]
 
 	def update(self, instance, validated_data):
 		"""
@@ -69,8 +76,11 @@ class BasketSerializer(serializers.ModelSerializer):
 		model = Basket
 		fields = '__all__'
 
+
+
 class OrderSerializer(serializers.ModelSerializer):
 	baskets= BasketSerializer(many=True)
+	
 
 	class Meta:
 		model = Order
