@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.db.models import Count, Sum, Min, Max, DateTimeField
 from django.db.models.functions import Trunc
-from .models import Product, Profile, Order, Basket
+from .models import Product, Profile, Order, Basket, Address
 
 
 admin.site.site_header = 'Chabra Dashboard'
+
 
 class ProductAdmin (admin.ModelAdmin):
     list_display = ('name', 'price', 'stock', 'date_added', 'active' )
@@ -90,5 +91,6 @@ class ProfileAdmin (admin.ModelAdmin):
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Address)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Basket)
