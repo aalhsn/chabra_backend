@@ -80,7 +80,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'wtshop.wsgi.application'
 
 
-
+# Email configuration
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'chabra.coded@gmail.com'
+EMAIL_HOST_PASSWORD = 'Chabra@2019'
 
 
 # Database
@@ -146,5 +151,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #Activate heroku
 # django_heroku.settings(locals())
 
-if not DEBUG:
-    from .local_settings import *
+# if not DEBUG:
+#     from .local_settings import *
