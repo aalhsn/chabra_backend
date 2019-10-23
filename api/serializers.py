@@ -37,20 +37,21 @@ class AddressSerializer(serializers.ModelSerializer):
 		fields = "__all__"
 
 class UserSerializer(serializers.ModelSerializer):
-	addresses = AddressSerializer(many=True)
 
 	class Meta:
 		model = User
-		fields = ["username", "first_name", "last_name", "email", "addresses"]
+		fields = ["username", "first_name", "last_name", "email"]
 		read_only_fields = ['username']
 
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
 	user = UserSerializer()
+	addresses = AddressSerializer(many=True)
 	order_history = serializers.SerializerMethodField()
+
 	class Meta:
 		model = Profile
-		exclude = ["id"]
+		fields = ["user","phone","gender","age","image","addresses", "order_history"]
 
 	def update(self, instance, validated_data):
 		"""

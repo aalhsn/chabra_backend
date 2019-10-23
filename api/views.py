@@ -39,6 +39,9 @@ class ProfileUpdateView(RetrieveUpdateAPIView):
 	def get_object(self):
 		return Profile.objects.get(user=self.request.user)
 
+class AddressCreateAPIView(CreateAPIView):
+	serializer_class = AddressSerializer
+
 
 class OrderItems(APIView):
 	serializer_class = OrderSerializer
@@ -48,7 +51,13 @@ class OrderItems(APIView):
 		total = 0
 		for item in request.data['baskets']:
 			total += item['quantity']*Product.objects.get(id=item['id']).price
-		order  = Order.objects.create(order_ref= rand_order_ref, customer = request.user, address=request.data['address'], total=total)
+		
+		address_data = request.data['address']
+		address_data["profile"] = request.user.profile
+		address_object, _ = Address.objects.get_or_create(**address_data)
+		address_object.save()
+
+		order  = Order.objects.create(order_ref= rand_order_ref, customer = request.user, address= address_object, total=total)
 		items = request.data['baskets']
 		for item in items:
 			Basket.objects.create(
@@ -57,10 +66,6 @@ class OrderItems(APIView):
 				order=order
 			)
 		return Response(self.serializer_class(order).data, status=HTTP_200_OK)
-
-
-
-
 
 
 
