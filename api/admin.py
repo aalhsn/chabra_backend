@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db.models import Count, Sum, Min, Max, DateTimeField
 from django.db.models.functions import Trunc
 from .models import Product, Profile, Order, Basket, Address
+from django.utils.translation import ugettext_lazy as _
 
 
 admin.site.site_header = 'Chabra Dashboard'
@@ -25,13 +26,14 @@ class ProductAdmin (admin.ModelAdmin):
     make_active.short_description = "Activate products"
 
     def make_inactive(self, request, queryset):
-        rows_updated = queryset.update(active=True)
+        rows_updated = queryset.update(active=False)
         if rows_updated == 1:
             message_bit = "1 product was"
         else:
             message_bit = "%s products were" % rows_updated
         self.message_user(request, "%s successfully deactived." % message_bit)
     make_inactive.short_description = "Deactivate products"
+
 
 
 class OrderAdmin (admin.ModelAdmin):
