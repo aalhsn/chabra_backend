@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=120)),
                 ('price', models.DecimalField(decimal_places=3, max_digits=6, validators=[django.core.validators.MinValueValidator(0.0)])),
                 ('img', models.ImageField(upload_to='')),
-                ('quantity', models.PositiveIntegerField()),
+                ('stock', models.PositiveIntegerField()),
                 ('description', models.TextField()),
                 ('active', models.BooleanField(default=True)),
                 ('quantity_per_order', models.PositiveIntegerField()),
